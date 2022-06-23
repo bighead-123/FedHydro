@@ -1,0 +1,4 @@
+prcp：precipitation，降雨
+srad：向下短波辐射：short-wave downward radiation
+tmax/tmin：最大最小温度
+vp：气压
