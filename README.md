@@ -34,8 +34,12 @@
 **具体可参考https://github.com/EngineerDDP/Parallel-SGD**
 - 搭建好分布环境（Docker搭建）
 - 各个worker节点都执行./worker.py
-- 提交者运行相应的提交者程序
-- 执行完成后会在提交者上生成结果文件：
+- 提交者运行相应的提交者程序*_submit_*.py
+- 执行完成后会在提交者上生成命名为形如Node-0-Retrieve（对应第一个节点）的结果文件
+- 取出其中训练好的模型*.model进行测试
+
+## 测试
+
   
   
 
