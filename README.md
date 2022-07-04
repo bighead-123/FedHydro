@@ -30,6 +30,8 @@
   - 将生成的数据集（txt格式）放入./dataset/series_data/下
   - 将./dataset/series_data/hydro_data_6basins.py中涉及到数据集路径的地方修改即可
 
+  ***注：./dataset/series_data/ 下有生成好的6个流域合并数据集*
+
 ## 执行
 **具体可参考https://github.com/EngineerDDP/Parallel-SGD**
 - 搭建好分布环境（Docker搭建）
