@@ -19,7 +19,7 @@
   
 ## 数据集
 ### 数据集下载
-  从https://ral.ucar.edu/solutions/products/camels 处下载CAMELS数据集，将其中的水文单元为01和03的气象及流量数据集放入(./dataset/series_data/discharge_data) 以及 ./dataset/series_data/forcing_data中
+  从https://ral.ucar.edu/solutions/products/camels 处下载CAMELS数据集，将其中的水文单元为01和03的气象及流量数据集放入([*流量数据*](./dataset/series_data/discharge_data)) 以及 ./dataset/series_data/forcing_data中
 
 ### 合并数据集
   **将多个流域的数据合并，生成符合框架使用规则的数据集**
