@@ -7,7 +7,7 @@ from dataset.femnist import IFedDataset
 from dataset.series_data.utils.camels_operate import CamelsOperate
 
 
-class HydroDataSet2(IFedDataset):
+class HydroDataSet3Basins(IFedDataset):
 
     def set_node_id(self, node_id: int) -> None:
         pass
@@ -26,29 +26,29 @@ class HydroDataSet2(IFedDataset):
     def check_sum(self) -> str:
 
         # os.path.join() 路径拼接
-        if not (os.path.exists(os.path.join(self.path, 'train_6basins_x.txt')) and
-                os.path.exists(os.path.join(self.path, 'train_6basins_y.txt')) and
-                os.path.exists(os.path.join(self.path, 'test_6basins_x.txt')) and
-                os.path.exists(os.path.join(self.path, 'test_6basins_y.txt'))):
+        if not (os.path.exists(os.path.join(self.path, 'train_3basins_x.txt')) and
+                os.path.exists(os.path.join(self.path, 'train_3basins_y.txt')) and
+                os.path.exists(os.path.join(self.path, 'test_3basins_x.txt')) and
+                os.path.exists(os.path.join(self.path, 'test_3basins_y.txt'))):
             return ''
 
         sum = hashlib.md5()  # 获取一个md5加密算法对象
-        with open(os.path.join(self.path, 'train_6basins_x.txt'), 'rb') as file:
+        with open(os.path.join(self.path, 'train_3basins_x.txt'), 'rb') as file:
             sum.update(file.read())  # 制定需要加密的字符串
-        with open(os.path.join(self.path, 'train_6basins_y.txt'), 'rb') as file:
+        with open(os.path.join(self.path, 'train_3basins_y.txt'), 'rb') as file:
             sum.update(file.read())
-        with open(os.path.join(self.path, 'test_6basins_x.txt'), 'rb') as file:
+        with open(os.path.join(self.path, 'test_3basins_x.txt'), 'rb') as file:
             sum.update(file.read())
-        with open(os.path.join(self.path, 'test_6basins_y.txt'), 'rb') as file:
+        with open(os.path.join(self.path, 'test_3basins_y.txt'), 'rb') as file:
             sum.update(file.read())
         return sum.hexdigest()  # 获取加密后的16进制字符串
 
     def extract_files(self) -> list:
         return [
-            os.path.join(self.path, 'train_6basins_x.txt'),
-            os.path.join(self.path, 'train_6basins_y.txt'),
-            os.path.join(self.path, 'test_6basins_x.txt'),
-            os.path.join(self.path, 'test_6basins_y.txt')
+            os.path.join(self.path, 'train_3basins_x.txt'),
+            os.path.join(self.path, 'train_3basins_y.txt'),
+            os.path.join(self.path, 'test_3basins_x.txt'),
+            os.path.join(self.path, 'test_3basins_y.txt')
         ]
 
     def estimate_size(self) -> int:
@@ -56,8 +56,8 @@ class HydroDataSet2(IFedDataset):
 
     def __load_core(self, kind='train'):
         """Load hydro 01 from `path`"""
-        x_path = os.path.join(self.path, '%s_6basins_x.txt' % kind)
-        y_path = os.path.join(self.path, '%s_6basins_y.txt' % kind)
+        x_path = os.path.join(self.path, '%s_3basins_x.txt' % kind)
+        y_path = os.path.join(self.path, '%s_3basins_y.txt' % kind)
         # 注意, time_step和generate_data中的对应起来
         time_step = 30
         x = np.loadtxt(x_path, delimiter=' ').reshape((-1, time_step, 5))
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     #         'end_date': pd.to_datetime("2000-09-30", format="%Y-%m-%d")
     #     }
     # }
-    hydroDataSet = HydroDataSet2()
+    hydroDataSet = HydroDataSet3Basins()
     print(hydroDataSet.check_sum())
     print(hydroDataSet.extract_files())
     train_x, train_y, test_x, test_y = hydroDataSet.load()

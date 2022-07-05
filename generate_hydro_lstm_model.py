@@ -58,5 +58,4 @@ def gen_model3(sequence_length):
 
 if __name__ == '__main__':
     sequence_length = 30
-    # gen_model(sequence_length)
     gen_model2(sequence_length)

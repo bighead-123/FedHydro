@@ -2,8 +2,6 @@ from utils.constants import path
 import numpy as np
 import os
 import nn
-import tensorflow as tf
-import time
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 

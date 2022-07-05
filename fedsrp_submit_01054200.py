@@ -15,18 +15,15 @@ if __name__ == '__main__':
     worker = [FedSRPClient]
     sync = [SynchronizedSGD]
     name = ["fed_srp01054200"]
-    # 01 = MNIST()
-    # 数据集最好能被96整除
     # batch_size = block_size * worker_cnt
     # 每个节点在开始训练前会被分配到所有的数据集
     # disorder = 0 表示...
     # HydroDataSet()内部初始化用的batch_size和block_size要和下面一致
-    # 01 = HydroDataSet()
     data = HydroDataSetFedSRP2()
     node_count = 8
     batch_size = 256 * node_count
     block_size = 256
-
+    epoch = 100
     extra_parameter = {
                        'local_batch_size': 256,
                        'scarce_batch_size': 64,
@@ -39,7 +36,7 @@ if __name__ == '__main__':
     nodes = PSGD.parse_worker(worker_cnt=node_count, ps=True, filename="worker4.json")
     for i in range(1):
         try:
-            job.parallel(nodes, codec=worker[i], epoch=70, op_type=nn.optimizer.FedSRPSGDOptimizer,
+            job.parallel(nodes, codec=worker[i], epoch=epoch, op_type=nn.optimizer.FedSRPSGDOptimizer,
                          block_size=block_size,
                          ps_codec=ps[i],
                          gd_type=nn.gradient_descent.ADAMOptimizer,

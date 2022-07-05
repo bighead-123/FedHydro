@@ -19,7 +19,7 @@ if __name__ == '__main__':
     node_count = 8
     batch_size = 256 * node_count
     block_size = 256
-
+    epoch = 100
     extra_parameter = {
                        'local_batch_size': 256,
                        'scarce_batch_size': 64,
@@ -27,12 +27,11 @@ if __name__ == '__main__':
                        'local_epoch': 3,
                        'split_rate': 0.7
                        }
-    # job = PSGD.ParallelSGD(model, 01=01, transform=TimeSeriesTransform(batch_size=batch_size))
     job = PSGD.FedSRPParallelSGD(model, data=data, transform=TimeSeriesTransform(batch_size=batch_size))
     nodes = PSGD.parse_worker(worker_cnt=node_count, ps=True, filename="worker4.json")
     for i in range(1):
         try:
-            job.parallel(nodes, codec=worker[i], epoch=70, op_type=nn.optimizer.FedSRPSGDOptimizer,
+            job.parallel(nodes, codec=worker[i], epoch=epoch, op_type=nn.optimizer.FedSRPSGDOptimizer,
                          block_size=block_size,
                          ps_codec=ps[i],
                          gd_type=nn.gradient_descent.ADAMOptimizer,

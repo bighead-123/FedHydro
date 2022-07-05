@@ -1,11 +1,11 @@
-from dataset.code_test.fed_fomo.local_lstm.local_lstm import train_local_lstm
-from dataset.code_test.fed_meta_ref.MAML.data_util import HydroDataMeta
-from dataset.code_test.fed_fomo.chapter_exp1 import get_bayesianlstm, get_limited_data
-from dataset.code_test.fed_fomo.mutil_fune.mutil_fune import train_mutil_fune
-from dataset.code_test.fed_fomo.fedhydro.fedhydro import train_fedhydro
-from dataset.code_test.fed_fomo.transfer.transfer import tl_a_fune, tl_b_fune
+from dataset.code_test.fedsrp.local_lstm import train_local_lstm
+from dataset.code_test.fedsrp.data_util import HydroDataMeta
+from dataset.code_test.utils_test.get_hydro_data_with_date_range import GetHydroDataWithDate
+from dataset.code_test.fedsrp.mutil_fune import train_mutil_fune
+# 此处的为旧版本，fedhydro其实为FedFRP
+from dataset.code_test.fedsrp.fedhydro import train_fedhydro
+from dataset.code_test.fedsrp.transfer import tl_a_fune, tl_b_fune
 from dataset.code_test.hydro_lstm_test.save_script_ import cal_nse_rmse_mae
-from dataset.code_test.fed_fomo.fed_fomo import FedFomo
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -102,6 +102,16 @@ rich_date_range = {
 # train_x, train_y, val_x, val_y, ds_val, test_x, test_y, ds_test = get_limited_data(basin_id, date_range)
 # epoch = 100
 # batch_size = 64
+
+
+def get_limited_data(basin_id, date_range):
+    """"""
+    # getHydroData = GetHydroData(basin_id, sequence_length)
+    getHydroData = GetHydroDataWithDate(basin_id, sequence_length, date_range)
+    train_x, train_y, val_x, val_y, test_x, test_y = getHydroData.get_data()
+    ds_test = getHydroData.get_ds_test()
+    ds_val = getHydroData.get_ds_val()
+    return train_x, train_y, val_x, val_y, ds_val, test_x, test_y, ds_test
 
 
 def train_global_model_with_sparse(global_epoch, global_batch_size, block_ids, sparse_train_x, sparse_train_y):
@@ -218,7 +228,7 @@ def mutil_fune(global_model_name, basin_id, single_basin_data, epoch, batch_size
     predict_y = ds_test.local_rescale(predict_y, variable='output')
     nse, rmse, mae = cal_nse_rmse_mae(val_y, predict_y)
     print("mutil-fune, after fune:", nse)
-    mutil_fune_model.save('./model/compare_model_0413/mutil_fune'+str(basin_id)+'_2years.model')
+    mutil_fune_model.save('./model/mutil_fune'+str(basin_id)+'_2years.model')
     # mutil_fune_model.save('./model/mutil_fune'+str(basin_id)+'_2years2.model')
     # mutil_fune_model.save('./model/mutil_fune'+str(basin_id)+'_2years.model')
     # mutil_fune_model.save('./model/mutil_fune'+str(basin_id)+'.model')
@@ -237,7 +247,7 @@ def fed_hydro(fed_model_name, single_basin_data, epoch, batch_size, basin, test_
     predict_y = ds_test.local_rescale(predict_y, variable='output')
     nse, rmse, mae = cal_nse_rmse_mae(test_y, predict_y)
     print("fed_hydro, after fune:", nse)
-    fed_hydro_model.save('./model/compare_model_0413/fed_hydro'+str(basin)+'.model')
+    fed_hydro_model.save('./model/fed_hydro'+str(basin)+'.model')
     # fed_hydro_model.save('./model/fed_hydro'+str(basin)+'.model')
     return fed_hydro_model
 
@@ -253,7 +263,7 @@ def transfer_a(global_model_name, basin, single_basin_data, epoch, batch_size, t
     predict_y = ds_test.local_rescale(predict_y, variable='output')
     nse, rmse, mae = cal_nse_rmse_mae(test_y, predict_y)
     print("transfer-a, after fune:", nse)
-    tl_a_model.save('./model/compare_model_0413/tl_a_basin'+str(basin)+'_2years.model')
+    tl_a_model.save('./model/tl_a_basin'+str(basin)+'_2years.model')
     # tl_a_model.save('./model/tl_a_basin'+str(basin)+'_2years2.model')
     # tl_a_model.save('./model/tl_a_basin'+str(basin)+'_2years.model')
     # tl_a_model.save('./model/tl_a_basin'+str(basin)+'.model')
@@ -271,7 +281,7 @@ def transfer_b(global_model_name, basin, single_basin_data, epoch, batch_size, t
     predict_y = ds_test.local_rescale(predict_y, variable='output')
     nse, rmse, mae = cal_nse_rmse_mae(test_y, predict_y)
     print("transfer-b, after fune:", nse)
-    tl_b_model.save('./model/compare_model_0413/tl_b_basin' + str(basin) + '_2years.model')
+    tl_b_model.save('./model/tl_b_basin' + str(basin) + '_2years.model')
     # tl_b_model.save('./model/tl_b_basin' + str(basin) + '_2years2.model')
     # tl_b_model.save('./model/tl_b_basin' + str(basin) + '_2years.model')
     # tl_b_model.save('./model/tl_b_basin' + str(basin) + '.model')
@@ -514,18 +524,18 @@ def get_merge_data(rich_basin_ids, sparse_data_ids, rich_date_range, sparse_date
     return train_data_list, test_data_list, ds_test_list
 
 
-def fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list):
-    round = 70
-    eval_round = 2  # 5*5个epoch验证一次
-    local_epoch = 2
-    batch_size = 256
-    target_basin_batch_size = 64
-    num_basins = len(rich_basin_ids) + len(sparse_basin_ids)
-    train_split = 0.7
-    model_path = local_basic_model_name
-    fed_fomo = FedFomo(model_path, round, eval_round, local_epoch, batch_size, target_basin_batch_size,
-                       num_basins, train_data_list, test_data_list, ds_test_list, train_split, len(sparse_basin_ids))
-    fed_fomo.run()
+# def fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list):
+#     round = 70
+#     eval_round = 2  # 5*5个epoch验证一次
+#     local_epoch = 2
+#     batch_size = 256
+#     target_basin_batch_size = 64
+#     num_basins = len(rich_basin_ids) + len(sparse_basin_ids)
+#     train_split = 0.7
+#     model_path = local_basic_model_name
+#     fed_fomo = FedFomo(model_path, round, eval_round, local_epoch, batch_size, target_basin_batch_size,
+#                        num_basins, train_data_list, test_data_list, ds_test_list, train_split, len(sparse_basin_ids))
+#     fed_fomo.run()
 
 
 def get_rich_basin_res(basin_ids, flag):

@@ -1,5 +1,3 @@
-from dataset.fed_mnist import MNIST
-from dataset.cifar import CIFAR
 from dataset.simdata import SimLin
 from dataset.femnist import Femnist
 from dataset.fed_time_series import TimeSeries
@@ -17,3 +15,5 @@ from dataset.hydro_data_8basins_01054200_fedsrp import HydroDataSetFedSRP2
 from dataset.hydro_data_8basins_01055000_fedsrp import HydroDataSetFedSRP3
 from dataset.hydro_data_2basins_fedsrp_test import HydroDataSetFedSRPTest
 from dataset.hydro_data_3basins_fedsrp_test import HydroDataSetFedSRPTest2
+from dataset.hydro_data_3basins import HydroDataSet3Basins
+

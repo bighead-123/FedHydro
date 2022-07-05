@@ -1,13 +1,11 @@
-from dataset.code_test.fed_fomo.local_lstm.local_lstm import train_local_lstm
 from dataset.code_test.hydro_lstm_test.save_script_ import cal_nse_rmse_mae
-from dataset.code_test.fed_fomo.fed_fomo import FedFomo
-from dataset.code_test.fed_fomo.chapter4_exp2 import get_merge_data, get_date_range, get_sparse_data, train_test_data, mutil_fune, transfer_a, transfer_b, fed_hydro
+from dataset.code_test.fedsrp.chapter4_exp2 import get_merge_data, get_date_range, get_sparse_data, train_test_data, mutil_fune, transfer_a, transfer_b, fed_hydro
 import pandas as pd
 import nn
 from utils.constants import local_basic_lstm
 import numpy as np
 
-local_basic_model_name = local_basic_lstm
+local_basic_model_name = "./basic_local_model.model"
 
 rich_date_range = {
         'train_date': {
@@ -16,14 +14,15 @@ rich_date_range = {
         },
         'val_date': {
             'start_date': pd.to_datetime("2000-10-01", format="%Y-%m-%d"),
-            'end_date': pd.to_datetime("2005-09-30", format="%Y-%m-%d")  # 测试日期1，差异性大， 数据太少不设置验证期
+            'end_date': pd.to_datetime("2005-09-30", format="%Y-%m-%d")
         },
         'test_date': {
-            'start_date': pd.to_datetime("2006-10-01", format="%Y-%m-%d"),  # 测试日期2， 差异性小
+            'start_date': pd.to_datetime("2006-10-01", format="%Y-%m-%d"),
             'end_date': pd.to_datetime("2008-09-30", format="%Y-%m-%d")
         },
     }
 
+"""实验均使用val_date时期数据进行测试，test_date不用管"""
 # 01047000
 date_range1 = {
         'train_date': {
@@ -32,10 +31,10 @@ date_range1 = {
         },
         'val_date': {
             'start_date': pd.to_datetime("2000-10-01", format="%Y-%m-%d"),
-            'end_date': pd.to_datetime("2002-09-30", format="%Y-%m-%d")  # 测试日期1，差异性大， 数据太少不设置验证期
+            'end_date': pd.to_datetime("2002-09-30", format="%Y-%m-%d")
         },
         'test_date': {
-            'start_date': pd.to_datetime("2006-10-01", format="%Y-%m-%d"),  # 测试日期2， 差异性小
+            'start_date': pd.to_datetime("2006-10-01", format="%Y-%m-%d"),
             'end_date': pd.to_datetime("2008-09-30", format="%Y-%m-%d")
         },
     }
@@ -48,10 +47,10 @@ date_range2 = {
         },
         'val_date': {
             'start_date': pd.to_datetime("2007-10-01", format="%Y-%m-%d"),
-            'end_date': pd.to_datetime("2009-09-30", format="%Y-%m-%d")  # 测试日期1，差异性大， 数据太少不设置验证期
+            'end_date': pd.to_datetime("2009-09-30", format="%Y-%m-%d")
         },
         'test_date': {
-            'start_date': pd.to_datetime("2000-10-01", format="%Y-%m-%d"),  # 测试日期2， 差异性小
+            'start_date': pd.to_datetime("2000-10-01", format="%Y-%m-%d"),
             'end_date': pd.to_datetime("2002-09-30", format="%Y-%m-%d")
         },
     }
@@ -73,19 +72,19 @@ date_range3 = {
     }
 
 
-def fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list):
-    """废弃"""
-    round = 70
-    eval_round = 2  # 5*5个epoch验证一次
-    local_epoch = 3
-    batch_size = 256
-    target_basin_batch_size = 64
-    num_basins = len(rich_basin_ids) + len(sparse_basin_ids)
-    train_split = 0.7
-    model_path = local_basic_model_name
-    fed_fomo = FedFomo(model_path, round, eval_round, local_epoch, batch_size, target_basin_batch_size,
-                       num_basins, train_data_list, test_data_list, ds_test_list, train_split, len(sparse_basin_ids), sparse_basin_ids)
-    fed_fomo.run()
+# def fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list):
+#     """废弃"""
+#     round = 70
+#     eval_round = 2  # 5*5个epoch验证一次
+#     local_epoch = 3
+#     batch_size = 256
+#     target_basin_batch_size = 64
+#     num_basins = len(rich_basin_ids) + len(sparse_basin_ids)
+#     train_split = 0.7
+#     model_path = local_basic_model_name
+#     fed_fomo = FedFomo(model_path, round, eval_round, local_epoch, batch_size, target_basin_batch_size,
+#                        num_basins, train_data_list, test_data_list, ds_test_list, train_split, len(sparse_basin_ids), sparse_basin_ids)
+#     fed_fomo.run()
 
 
 def correct_date_range_test():
@@ -110,6 +109,14 @@ def correct_date_range_test():
     return date_range_list
 
 
+def train_local_lstm(local_model, single_basin_data, epoch, batch_size):
+    """仅用本地数据训练"""
+    train_x = single_basin_data[0]
+    train_y = single_basin_data[1]
+    local_model.fit(train_x, train_y, epoch=epoch, batch_size=batch_size)
+    return local_model
+
+
 def local_lstm(basin_id, test_date, local_basic_model_name, single_basin_data, test_x, test_y, single_ds_test, epoch,  batch_size):
     """生成本地模型"""
     local_basic_model = nn.model.SequentialModel.load(local_basic_model_name)
@@ -117,7 +124,7 @@ def local_lstm(basin_id, test_date, local_basic_model_name, single_basin_data, t
     predict_y = model.predict(test_x)
     predict_y = single_ds_test.local_rescale(predict_y, variable='output')
     nse, rmse, mae = cal_nse_rmse_mae(test_y, predict_y)
-    model.save('./model/compare_model_0413/local_BLSTM'+str(basin_id)+'_2years.model')
+    model.save('./model/local_BLSTM'+str(basin_id)+'_2years.model')
     print("Local_BLSTM, basin:", basin_id, ",date:", test_date, ",nse:", nse)
     return model
 
@@ -132,7 +139,7 @@ def generate_compare_model():
     batch_size = 64
     for basin_id in basin_ids:
         "在chapter4_exp2.py中的train_global_model_with_sparse函数生成全局模型"
-        global_model_name = './model/global_model_0414/global_model_8basins_70epoch_2years'+str(basin_id)+'.model'
+        global_model_name = './model/global_model_8basins_'+str(basin_id)+'.model'
         # global_model_name = './model/global_model_6basins_70epoch_2years.model'
         single_basin_data, val_x, val_y, ds_val, test_x, test_y, ds_test = train_test_data(basin_id, the_date_range[i])
 
@@ -150,13 +157,13 @@ def generate_compare_model():
         tl_b_model = transfer_b(global_model_name, basin_id, single_basin_data, fune_epoch, batch_size, val_x, val_y, ds_val)
         i += 1
 
-        """fed_hydro"""
+        """FedFRP，之前称为fed_hydro，为了与FedSRP区分，改为FedFRP"""
         fed_model_name = './model/MODEL-fed_hydro_6basins_t30_210-N(0).model'
         fed_hydro_model = fed_hydro(fed_model_name, single_basin_data, fune_epoch, batch_size, basin_id, val_x, val_y, ds_val)
 
         """fed_srp"""
         # fed_srp_model_path = './model/fed_srp/fedsrp_0414/MODEL-fed_srp' + str(basin_id) + '-N(7).model'
-        fed_srp_model_path = './model/fed_srp/fedsrp_0414/MODEL-fed_srp_epoch100_' + str(basin_id) + '-N(7).model'
+        fed_srp_model_path = './model/MODEL-fed_srp_epoch100_' + str(basin_id) + '-N(7).model'
         fed_srp_model = nn.model.SequentialModel.load(fed_srp_model_path)
         fed_srp_model.fit(x=single_basin_data[0], label=single_basin_data[1], epoch=5, batch_size=64)
         """eval_model"""
@@ -237,7 +244,7 @@ def fed_srp_model_test():
     the_date_range = [date_range1, date_range2, date_range3]
     i = 0
     for basin in basin_ids:
-        fed_fomo_path = './model/fed_srp/fedsrp_8basins_spilt_rate0.7_client8_70epoch_'+str(basin)+'.model'
+        fed_fomo_path = './model/MODEL-fed_srp_epoch100_' + str(basin_id) + '-N(7).model'
         single_basin_data, val_x, val_y, ds_val, test_x, test_y, ds_test = train_test_data(basin, the_date_range[i])
         model = nn.model.SequentialModel.load(fed_fomo_path)
         predict_y = model.predict(test_x)
@@ -280,39 +287,39 @@ def sparse_basin_date_test():
             local_lstm(basin, test_date_range, local_basic_model_name, single_basin_data, val_x, val_y, ds_val, epoch, batch_size)
 
 
-def fedsrp():
-    """废弃"""
-    """7个数据丰富流域， 1个数据稀缺流域"""
-    rich_basin_ids1 = ['01013500', '01030500', '01031500', '01052500', '01055000', '01057000', '01054200']  # 01047000
-    rich_basin_ids2 = ['01013500', '01030500', '01031500', '01052500', '01055000', '01057000', '01047000']  # 01054200
-    rich_basin_ids3 = ['01013500', '01030500', '01031500', '01052500', '01057000', '01047000', '01054200']  # 01055000
-    rich_basin_id_list = []
-    rich_basin_id_list.append(rich_basin_ids1)
-    rich_basin_id_list.append(rich_basin_ids2)
-    rich_basin_id_list.append(rich_basin_ids3)
-
-    sparse_basin_ids1 = ['01047000']
-    sparse_basin_ids2 = ['01054200']
-    sparse_basin_ids3 = ['01055000']
-    sparse_basin_ids_list = []
-    sparse_basin_ids_list.append(sparse_basin_ids1)
-    sparse_basin_ids_list.append(sparse_basin_ids2)
-    sparse_basin_ids_list.append(sparse_basin_ids3)
-    # rich_date_range = rich_date_range
-    sparse_date_range = []
-    for i in range(len(rich_basin_id_list)):
-        if i == 0:
-            sparse_date_range.append(date_range1)
-        elif i == 1:
-            sparse_date_range.append(date_range2)
-        else:
-            sparse_date_range.append(date_range3)
-        rich_basin_ids = rich_basin_id_list[i]
-        sparse_basin_ids = sparse_basin_ids_list[i]
-        train_data_list, test_data_list, ds_test_list = get_merge_data(rich_basin_ids, sparse_basin_ids,
-                                                                       rich_date_range, sparse_date_range)
-        sparse_date_range = []
-        fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list)
+# def fedsrp():
+#     """废弃"""
+#     """7个数据丰富流域， 1个数据稀缺流域"""
+#     rich_basin_ids1 = ['01013500', '01030500', '01031500', '01052500', '01055000', '01057000', '01054200']  # 01047000
+#     rich_basin_ids2 = ['01013500', '01030500', '01031500', '01052500', '01055000', '01057000', '01047000']  # 01054200
+#     rich_basin_ids3 = ['01013500', '01030500', '01031500', '01052500', '01057000', '01047000', '01054200']  # 01055000
+#     rich_basin_id_list = []
+#     rich_basin_id_list.append(rich_basin_ids1)
+#     rich_basin_id_list.append(rich_basin_ids2)
+#     rich_basin_id_list.append(rich_basin_ids3)
+#
+#     sparse_basin_ids1 = ['01047000']
+#     sparse_basin_ids2 = ['01054200']
+#     sparse_basin_ids3 = ['01055000']
+#     sparse_basin_ids_list = []
+#     sparse_basin_ids_list.append(sparse_basin_ids1)
+#     sparse_basin_ids_list.append(sparse_basin_ids2)
+#     sparse_basin_ids_list.append(sparse_basin_ids3)
+#     # rich_date_range = rich_date_range
+#     sparse_date_range = []
+#     for i in range(len(rich_basin_id_list)):
+#         if i == 0:
+#             sparse_date_range.append(date_range1)
+#         elif i == 1:
+#             sparse_date_range.append(date_range2)
+#         else:
+#             sparse_date_range.append(date_range3)
+#         rich_basin_ids = rich_basin_id_list[i]
+#         sparse_basin_ids = sparse_basin_ids_list[i]
+#         train_data_list, test_data_list, ds_test_list = get_merge_data(rich_basin_ids, sparse_basin_ids,
+#                                                                        rich_date_range, sparse_date_range)
+#         sparse_date_range = []
+#         fedsrp_test(rich_basin_ids, sparse_basin_ids, train_data_list, test_data_list, ds_test_list)
 
 
 def cal_improvement_rate():
@@ -397,11 +404,16 @@ if __name__ == '__main__':
     # sparse_basin_date_test()
 
     """生成FedSRP及其对比模型，及对比结果"""
+    """"调用此方法前，需要先生成以下模型
+    1、在chapter4_exp2.py中的train_global_model_with_sparse函数生成全局模型
+    2、FedFRP模型
+    3、FedSRP模型
+    然后将生成的模型放入fedsrp/model文件夹下"""
     generate_compare_model()
     # generate_compare_model_S2()
     # fed_srp_model_test()
 
-    """计算NSE提高比率"""
+    # 计算NSE提高比率
     # cal_improvement_rate()
 
     # 计算rmse, mae降低比例
@@ -414,7 +426,3 @@ if __name__ == '__main__':
     # mae2 = [1.5611482316940521, 1.4075683964989523, 1.42474841915122, 1.4243162055765788, 1.5830128432426982, 1.3364599210812476]
     # mae3 = [1.5618057076046716, 1.175705598765456, 1.181536202744692, 1.2062192686409605, 1.3405968676342832, 1.1850863914180942]
     # cal_improvement_rate2(mae1, mae2, mae3)
-
-    """fed_srp_test"""
-    # fed_srp_model_test2()
-    # generate_compare_model()

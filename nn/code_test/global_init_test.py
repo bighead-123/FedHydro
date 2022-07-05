@@ -13,7 +13,7 @@ model.add(nn.layer.LSTM(n_in=5, units=20, nb_seq=30))
 model.add(nn.layer.Dense(1))
 model.setup(nn.loss.MSELoss())
 model.compile(nn.gradient_descent.ADAMOptimizer(alpha=5e-4))
-model.save('lstm_hydro_3_basins.model')
+model.save('lstm_hydro.model')
 print(model.summary())
 # model.global_initialization()
 # fit network

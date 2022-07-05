@@ -15,13 +15,10 @@ if __name__ == '__main__':
     worker = [FedSRPClient, FedSRPClient, FedSRPClient]
     sync = [SynchronizedSGD, SynchronizedSGD, SynchronizedSGD]
     names = ["fed_srp_epoch100_01047000", "fed_srp_epoch100_01054200", "fed_srp_epoch100_01055000"]
-    # 01 = MNIST()
-    # 数据集最好能被96整除
     # batch_size = block_size * worker_cnt
     # 每个节点在开始训练前会被分配到所有的数据集
     # disorder = 0 表示...
     # HydroDataSet()内部初始化用的batch_size和block_size要和下面一致
-    # 01 = HydroDataSet()
     data = [HydroDataSetFedSRP(), HydroDataSetFedSRP2(), HydroDataSetFedSRP3()]
     node_count = 8
     batch_size = 256 * node_count
