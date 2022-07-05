@@ -29,6 +29,8 @@
   - 执行./dataset/series_data/utils/generate_data.py，根据需要生成合并数据集（生成前注意修改数据集保存路径）
   - 将生成的数据集（txt格式）放入./dataset/series_data/下
   - 将./dataset/series_data/hydro_data_6basins.py中涉及到数据集路径的地方修改即可
+  - 然后在./dataset/ 下创建对应的加载合并数据集的类（eg: hydro_data_6basins.py下的HydroDataSet2类）
+  - 在提交者处会调用到加载合并数据集的类
 
   *注：./dataset/series_data/ 下有生成好的6个流域合并数据集，这可用于直接使用，其余的由于Github容量限制，可按照上述步骤生成合并数据集*
 
@@ -42,7 +44,7 @@
 
 ## 测试
 - FedFRP相关实验在./dataset/code_test/hydro_lstm_test/save_script_.py 中，
-- FedSRP相关实验在
+- FedSRP相关实验在./dataset/code_test/fedsrp/中.
 
   
   
