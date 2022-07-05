@@ -40,6 +40,7 @@
 - 提交者运行相应的提交者程序*_submit_*.py
 - 执行完成后会在提交者上生成命名为形如Node-0-Retrieve（对应第一个节点）的结果文件
 - 取出其中训练好的模型*.model进行测试
+##
 *如何搭建训练环境，具体可参考https://github.com/EngineerDDP/Parallel-SGD*
 
 ## 测试
