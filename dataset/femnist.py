@@ -4,7 +4,7 @@ from typing import Dict
 import numpy as np
 import os
 import hashlib
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta,abstractmethod
 
 from dataset.interfaces import AbsDataset
 
