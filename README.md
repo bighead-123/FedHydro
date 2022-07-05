@@ -13,7 +13,7 @@
 ### FedSRP相关提交者:
   - ./fedsrp_submit.py
   - ./fedsrp_submit_01054200.py
-  - fedsrp_submit_01055000.py
+  - ./fedsrp_submit_01055000.py
   
   注：分别表示以流域01047000，流域01054200，流域01055000为数据稀缺流域时对应的提交者
   
@@ -35,15 +35,15 @@
   *注：./dataset/series_data/ 下有生成好的6个流域合并数据集，这可用于直接使用，其余的由于Github容量限制，可按照上述步骤生成合并数据集*
 
 ## 执行
-**具体可参考https://github.com/EngineerDDP/Parallel-SGD**
 - 搭建好分布环境（Docker搭建）
 - 各个worker节点都执行./worker.py
 - 提交者运行相应的提交者程序*_submit_*.py
 - 执行完成后会在提交者上生成命名为形如Node-0-Retrieve（对应第一个节点）的结果文件
 - 取出其中训练好的模型*.model进行测试
+*如何搭建训练环境，具体可参考https://github.com/EngineerDDP/Parallel-SGD*
 
 ## 测试
-- FedFRP相关实验在./dataset/code_test/hydro_lstm_test/save_script_.py 中，
+- FedFRP相关实验在./dataset/code_test/hydro_lstm_test/save_script_.py 中
 - FedSRP相关实验在./dataset/code_test/fedsrp/中.
 
   
