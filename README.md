@@ -5,10 +5,10 @@
 
 ## 提交者
 ### FedFRP相关提交者
-  - ./fed_hydro_3basins_t30_submit.py
-  - ./fed_hydro_6basins_submit.py
-  - ./fed_hydro_9basins_t30_submit.py
-  - ./fed_hydro_12basins_t30_210_submit.py
+  - ./fedfrp_3basins_t30_submit.py
+  - ./fedfrp_6basins_submit.py
+  - ./fedfrp_9basins_t30_submit.py
+  - ./fedfrp_12basins_t30_210_submit.py
 
 ### FedSRP相关提交者:
   - ./fedsrp_submit.py
