@@ -19,7 +19,7 @@
   
 ## 数据集
 ### 数据集下载
-  从https://ral.ucar.edu/solutions/products/camels 处下载CAMELS数据集，将其中的水文单元为01和03的气象及流量数据集放入([*流量数据*](./dataset/series_data/discharge_data)) 以及 ./dataset/series_data/forcing_data中
+  从https://ral.ucar.edu/solutions/products/camels 处下载CAMELS数据集，将其中的水文单元为01和03的气象及流量数据集放入./dataset/series_data/discharge_data以及 ./dataset/series_data/forcing_data中
 
 ### 合并数据集
   **将多个流域的数据合并，生成符合框架使用规则的数据集**
@@ -30,7 +30,7 @@
   - 将生成的数据集（txt格式）放入./dataset/series_data/下
   - 将./dataset/series_data/hydro_data_6basins.py中涉及到数据集路径的地方修改即可
 
-  ***注：./dataset/series_data/ 下有生成好的6个流域合并数据集*
+  ***注：./dataset/series_data/ 下有生成好的6个流域合并数据集，这可用于直接使用*
 
 ## 执行
 **具体可参考https://github.com/EngineerDDP/Parallel-SGD**
@@ -41,6 +41,8 @@
 - 取出其中训练好的模型*.model进行测试
 
 ## 测试
+- FedFRP相关实验在./dataset/code_test/hydro_lstm_test/save_script_.py 中，
+- FedSRP相关实验在
 
   
   
