@@ -1,7 +1,7 @@
 # FedHydro
 ## Description
 
-### The source code of the FedHydro framework, which is built enviroment based on the framework at https://github.com/EngineerDDP/Parallel-SGD
+### The source code of the FedHydro framework, which builds enviroment based on the framework at https://github.com/EngineerDDP/Parallel-SGD
 
 ## 提交者
 ### FedFRP相关提交者
